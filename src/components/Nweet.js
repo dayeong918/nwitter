@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { dbService, storageService } from 'fbase';
 import {doc, deleteDoc, updateDoc} from "firebase/firestore";
-import {deleteObect, deleteObject, ref} from "@firebase/storage";
+import {deleteObject, ref} from "@firebase/storage";
 
 
 const Nweet = ({ nweetObj, isOwner }) => {
@@ -11,16 +11,6 @@ const Nweet = ({ nweetObj, isOwner }) => {
     
     const NweetTextRef = doc(dbService, "nweets", `${nweetObj.id}`); //리터럴
     const urlRef = ref(storageService, nweetObj.attachmentUrl);
-
-    const onDeleteClick = async () => {
-        const ok = window.confirm('Are you sure you want to delete this nweet?'); //user 확인
-        if(ok){
-            //delete Tweet
-            await deleteDoc(NweetTextRef);
-            await deleteObject(urlRef);
-        }
-    };
-    const toggleEditing = () => setEditing((prev) => !prev);
 
     const onSubmit = async (event) => {
         event.preventDefault();
@@ -36,6 +26,26 @@ const Nweet = ({ nweetObj, isOwner }) => {
         } = event;
         setNewNweet(value);
     }
+
+    const onDeleteClick = async () => {
+        const ok = window.confirm('Are you sure you want to delete this nweet?'); //user 확인
+        if (ok) {
+            //delete Tweet
+            try{
+                //해당하는 트윗 파이어스토어에서 삭제
+                await deleteDoc(NweetTextRef);
+            
+            //삭제하려는 트윗에 이미지 파일이 있는 경우 이미지 파일 스토리지에서 삭제
+            if(nweetObj.attachmentUrl != ""){
+                await deleteObject(urlRef);
+            }
+        } catch(error){
+            window.alert("트윗 삭제 실패")
+        }
+    }
+    };
+    const toggleEditing = () => setEditing((prev) => !prev);
+
 
     return(
         <div>

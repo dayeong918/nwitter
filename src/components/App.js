@@ -45,7 +45,7 @@ const App = () => { // state : init, isLoggedIn, userObj
         ):(
           "Initializing..."
           )}
-      <footer>&copy; Nwitter {new Date().getFullYear()} Nwitter</footer>
+      {/* <footer>&copy; Nwitter {new Date().getFullYear()} Nwitter</footer> */}
       </>
     );
   };
